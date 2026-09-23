@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#05070D; --bg2:#080C14; --graphite:#11161F; --ink:#EAF0F7; --muted:#8996A8; --faint:#5C6878;
+  --bg:#05070D; --bg2:#080C14; --graphite:#11161F; --ink:#F0F5FA; --muted:#AEBCCB; --faint:#8798A8;
   --blue:#3B7BFF; --cyan:#2DD4E8; --violet:#8B7BFF;
-  --glass:rgba(255,255,255,.035); --glass2:rgba(255,255,255,.055); --edge:rgba(255,255,255,.09);
+  --glass:rgba(255,255,255,.035); --glass2:rgba(255,255,255,.055); --edge:rgba(255,255,255,.12);
   --edge2:rgba(255,255,255,.16);
   --good:#3FD69C; --bad:#FF6B81;
   --r:14px;
@@ -22,7 +22,7 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 86px);background:var(--bg)}
-body{margin:0;color:var(--ink);font-family:var(--body);font-weight:300;line-height:1.75;font-size:16px;background:var(--bg);overflow-x:hidden}
+body{margin:0;color:var(--ink);font-family:var(--body);font-weight:400;line-height:1.8;font-size:16.5px;background:var(--bg);overflow-x:hidden}
 img,svg{max-width:100%}
 a{color:var(--cyan);text-decoration:none}
 :focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
@@ -78,7 +78,7 @@ header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
 h1{font-weight:900;font-size:clamp(38px,5.6vw,62px);line-height:1.1;letter-spacing:-.01em;margin:0 0 20px}
 h1 span{background:linear-gradient(100deg,#fff 20%,var(--cyan) 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--muted);font-size:17.5px;max-width:46ch;margin:0 0 34px}
+.sub{color:var(--muted);font-size:18px;line-height:1.8;max-width:46ch;margin:0 0 34px}
 .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
 .visual{position:relative;border:1px solid var(--edge);border-radius:22px;padding:22px;
   background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
@@ -93,11 +93,11 @@ h1 span{background:linear-gradient(100deg,#fff 20%,var(--cyan) 55%,var(--violet)
 .vlabel.br{bottom:14px;right:20px}
 
 /* sections */
-section{padding:74px 0;scroll-margin-top:100px}
+section{padding:34px 0 74px;scroll-margin-top:100px}
 .shead{margin-bottom:38px;max-width:62ch}
 .eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.16em;color:var(--cyan);display:block;margin-bottom:12px}
 h2{font-weight:700;font-size:clamp(26px,3.2vw,36px);line-height:1.25;margin:0 0 12px;letter-spacing:-.01em}
-.shead p{color:var(--muted);margin:0}
+.shead p{color:var(--muted);margin:0;font-size:16px}
 h3{font-weight:700;font-size:19px;margin:0 0 8px}
 
 /* glass card base */
@@ -113,15 +113,15 @@ h3{font-weight:700;font-size:19px;margin:0 0 8px}
 .feat .ico{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;border:1px solid var(--edge);
   background:rgba(59,123,255,.09);margin-bottom:18px}
 .feat .ico svg{width:20px;height:20px;stroke:var(--cyan);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.feat p{color:var(--muted);font-size:15px;margin:0}
-.feat .go{font-family:var(--display);font-size:12px;letter-spacing:.1em;color:var(--faint);margin-top:16px;display:block}
+.feat p{color:var(--muted);font-size:15.5px;margin:0;line-height:1.7}
+.feat .go{font-family:var(--display);font-size:12px;letter-spacing:.1em;color:var(--cyan);opacity:.75;margin-top:16px;display:block}
 
 /* stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden}
 .stat{background:rgba(8,12,20,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:32px 26px;text-align:center}
 .stat .n{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;
   background:linear-gradient(140deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.stat .u{font-size:14px;color:var(--muted);margin-top:9px}
+.stat .u{font-size:14.5px;color:var(--muted);margin-top:10px}
 
 /* court + zone */
 .courtbox{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:start}
@@ -133,16 +133,16 @@ h3{font-weight:700;font-size:19px;margin:0 0 8px}
 .zoneinfo{padding:26px;min-height:240px}
 .zoneinfo .big{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:6px 0 14px;
   background:linear-gradient(140deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
-.zoneinfo p{margin:0 0 10px;font-size:15px}
-.hint{font-size:14px;color:var(--faint)}
+.zoneinfo p{margin:0 0 11px;font-size:15.5px;line-height:1.8;color:var(--muted)}
+.hint{font-size:14.5px;color:var(--faint)}
 
 /* equipment */
 .eqgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin-top:22px}
 .eq{padding:26px 24px;transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s}
 .eq:hover{transform:translateY(-5px);border-color:rgba(45,212,232,.34);box-shadow:0 20px 46px -28px rgba(45,212,232,.7)}
-.eq p{font-size:15px;color:var(--muted);margin:0}
+.eq p{font-size:15.5px;color:var(--muted);margin:0;line-height:1.75}
 .eq dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:14px 0 0;font-size:14.5px}
-.eq dt{color:var(--faint)}
+.eq dt{color:var(--cyan);opacity:.85;white-space:nowrap}
 .eq dd{margin:0;color:var(--ink)}
 .spec{font-family:var(--display);font-weight:600;color:var(--cyan)}
 
@@ -155,21 +155,30 @@ h3{font-weight:700;font-size:19px;margin:0 0 8px}
 .skilllist button[aria-current="true"]{color:var(--ink);font-weight:500;background:var(--glass2);border-color:var(--edge)}
 .skillcard{padding:30px}
 .skillcard h3{font-size:25px;margin-bottom:10px}
-.purpose{font-size:16.5px;color:var(--muted);margin:0 0 24px}
+.purpose{font-size:17px;color:var(--muted);margin:0 0 24px;line-height:1.8}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
 .cols h4{margin:0 0 10px;font-family:var(--display);font-size:12px;letter-spacing:.12em;color:var(--cyan)}
 .err h4{color:var(--bad)}
-.cols ol,.cols ul{margin:0;padding-left:1.25em;font-size:15px;color:var(--ink)}
+.cols ol,.cols ul{margin:0;padding-left:1.25em;font-size:15.5px;color:var(--ink);line-height:1.8}
 .cols li{margin-bottom:7px}
 .coachcue{margin-top:24px;padding:16px 18px;border-radius:11px;border:1px solid rgba(139,123,255,.25);
   background:rgba(139,123,255,.07);font-size:15px}
 .coachcue b{font-family:var(--display);font-size:11.5px;letter-spacing:.12em;color:var(--violet);display:block;margin-bottom:5px;font-weight:600}
 .vids{margin-top:24px}
 .vids h4{margin:0 0 10px;font-family:var(--display);font-size:12px;letter-spacing:.12em;color:var(--cyan)}
-.vidrow{display:flex;align-items:center;gap:13px;padding:12px 16px;margin-bottom:8px;border-radius:11px;
-  border:1px solid var(--edge);background:var(--glass);color:var(--ink);font-size:14.5px;transition:.28s}
-.vidrow:hover{border-color:rgba(45,212,232,.4);background:var(--glass2);transform:translateX(3px)}
-.vidrow svg{width:16px;height:16px;flex:none;stroke:var(--cyan);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.vidgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.vidcard{display:block;border-radius:12px;overflow:hidden;border:1px solid var(--edge);background:var(--glass);
+  color:var(--ink);transition:transform .32s cubic-bezier(.2,.8,.3,1),border-color .32s,box-shadow .32s}
+.vidcard:hover{transform:translateY(-4px);border-color:rgba(45,212,232,.45);box-shadow:0 18px 40px -24px rgba(45,212,232,.8)}
+.thumb{position:relative;aspect-ratio:16/9;background:linear-gradient(140deg,#16202E,#0B111C);display:block;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .pl{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,7,13,.28);transition:background .3s}
+.vidcard:hover .thumb .pl{background:rgba(5,7,13,.1)}
+.thumb .pl span{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(5,7,13,.62);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px)}
+.thumb .pl svg{width:16px;height:16px;fill:#fff;stroke:none;margin-left:2px}
+.vidcard .cap{padding:12px 14px 14px;font-size:14px;line-height:1.55;color:var(--ink)}
+.vidcard .cap i{display:block;font-style:normal;font-family:var(--display);font-size:11px;letter-spacing:.1em;color:var(--cyan);margin-top:6px;opacity:.8}
 
 /* tactics */
 .tac{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr);gap:34px;align-items:start}
@@ -182,7 +191,7 @@ h3{font-weight:700;font-size:19px;margin:0 0 8px}
 .steps button[aria-pressed="true"]{background:linear-gradient(120deg,rgba(59,123,255,.9),rgba(139,123,255,.9));color:#fff;border-color:transparent;
   box-shadow:0 6px 20px -8px rgba(59,123,255,.9)}
 .phase h3{font-size:23px}
-.phase p{color:var(--muted);margin:0}
+.phase p{color:var(--muted);margin:0;font-size:16px;line-height:1.85}
 .think{margin:22px 0 10px;padding:16px 18px;border-radius:11px;border:1px solid rgba(45,212,232,.24);background:rgba(45,212,232,.06)}
 .think b{font-family:var(--display);font-size:11.5px;letter-spacing:.12em;color:var(--cyan);display:block;margin-bottom:5px;font-weight:600}
 .think span{font-size:15px}
@@ -195,7 +204,7 @@ summary::-webkit-details-marker{display:none}
 summary::before{content:"";width:9px;height:9px;flex:none;border-right:1.5px solid var(--cyan);border-bottom:1.5px solid var(--cyan);
   transform:rotate(-45deg);transition:transform .3s}
 details[open] summary::before{transform:rotate(45deg)}
-details>div{padding:0 0 18px 21px;color:var(--muted);font-size:15px}
+details>div{padding:0 0 18px 21px;color:var(--muted);font-size:15.5px;line-height:1.85}
 
 /* rules widgets */
 .rulegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:32px}
@@ -233,7 +242,7 @@ details>div{padding:0 0 18px 21px;color:var(--muted);font-size:15px}
 .quiz .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:13.5px;color:var(--faint)}
 .quiz .nav button{font:inherit;border:0;background:none;color:var(--cyan);cursor:pointer;padding:0}
 .links{margin-top:26px;padding:22px 24px}
-.links ul{margin:10px 0 0;padding-left:1.2em;color:var(--muted);font-size:15px}
+.links ul{margin:10px 0 0;padding-left:1.2em;color:var(--muted);font-size:15.5px;line-height:1.9}
 .links li{margin-bottom:6px}
 
 /* season + roles */
@@ -241,27 +250,44 @@ details>div{padding:0 0 18px 21px;color:var(--muted);font-size:15px}
 .season div{background:rgba(8,12,20,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:24px 22px}
 .season .n{font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--cyan)}
 .season b{display:block;font-size:17px;font-weight:700;margin:6px 0 4px}
-.season p{margin:0;font-size:14px;color:var(--muted)}
+.season p{margin:0;font-size:14.5px;color:var(--muted);line-height:1.7}
 .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
 .role{padding:26px 24px;transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s}
 .role:hover{transform:translateY(-5px);border-color:rgba(139,123,255,.36);box-shadow:0 20px 46px -28px rgba(139,123,255,.75)}
-.role>p{color:var(--muted);font-size:14.5px;margin:0 0 12px}
-.role label{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;margin:9px 0;cursor:pointer;color:var(--muted);transition:color .25s}
+.role>p{color:var(--muted);font-size:15px;margin:0 0 12px;line-height:1.7}
+.role label{display:flex;gap:11px;align-items:flex-start;font-size:15px;margin:9px 0;cursor:pointer;color:var(--muted);transition:color .25s}
 .role label:hover{color:var(--ink)}
 .role input{margin-top:7px;accent-color:var(--blue)}
 
 /* footer */
 footer{border-top:1px solid var(--edge);margin-top:40px;padding:48px 0 44px}
 .fgrid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:34px}
-footer p{color:var(--faint);font-size:14px;margin:12px 0 0;max-width:42ch}
+footer p{color:var(--muted);font-size:14.5px;line-height:1.75;margin:12px 0 0;max-width:42ch}
 footer h4{font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--muted);margin:0 0 14px;font-weight:600}
 footer ul{list-style:none;margin:0;padding:0;font-size:14.5px}
 footer li{margin-bottom:8px}
 footer li a{color:var(--muted);transition:color .25s}
 footer li a:hover{color:var(--ink)}
-.fbot{margin-top:38px;padding-top:22px;border-top:1px solid var(--edge);font-size:13px;color:var(--faint)}
+.fbot{margin-top:38px;padding-top:22px;border-top:1px solid var(--edge);font-size:15px;color:var(--muted)}
+.fbot b{font-size:17px;font-weight:700;color:var(--ink)}
+.credit{margin:28px 0 0;font-size:14px;color:var(--faint);display:inline-flex;align-items:center;gap:4px;
+  border:1px solid var(--edge);border-radius:999px;padding:9px 20px;background:var(--glass)}
+.credit b{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:.02em}
 
 /* reveal */
+.panel{display:none}
+.panel.on{display:block;animation:pgin .5s cubic-bezier(.2,.8,.3,1)}
+@keyframes pgin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel.on{animation:none}}
+.pagetop{display:flex;align-items:center;gap:14px;padding:30px 0 0}
+.backlink{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--muted);
+  border:1px solid var(--edge);background:var(--glass);border-radius:999px;padding:8px 17px;cursor:pointer;font-family:var(--body);transition:.28s}
+.backlink:hover{color:var(--ink);border-color:var(--edge2);background:var(--glass2)}
+.backlink svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pagenav{display:flex;gap:10px;justify-content:space-between;margin-top:50px;padding-top:26px;border-top:1px solid var(--edge)}
+.pagenav button{font:inherit;font-size:14.5px;color:var(--muted);background:var(--glass);border:1px solid var(--edge);
+  border-radius:999px;padding:10px 20px;cursor:pointer;transition:.28s}
+.pagenav button:hover{color:var(--ink);border-color:var(--edge2);background:var(--glass2)}
 .rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.8,.3,1),transform .8s cubic-bezier(.2,.8,.3,1)}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
@@ -274,8 +300,9 @@ footer li a:hover{color:var(--ink)}
   .skilllist button{flex:none;border:1px solid transparent}
   .cols{grid-template-columns:1fr}
   .tac .courtsvg{max-width:300px}
-  .navlinks{display:none}
-  .navin{justify-content:space-between}
+  .navlinks{display:flex;width:100%;margin-left:0;justify-content:flex-start;gap:0}
+  .navlinks a{font-size:13.5px;padding:7px 11px}
+  .navin{flex-wrap:wrap;border-radius:18px;padding:10px 14px;gap:8px}
   .score .call{font-size:56px}
   section{padding:56px 0}
 }
@@ -296,6 +323,7 @@ footer li a:hover{color:var(--ink)}
       PICKLE.LAB
     </span>
     <nav class="navlinks">
+      <a href="#home">首頁</a>
       <a href="#gear">器材與球場</a>
       <a href="#skills">動作示例</a>
       <a href="#tactics">戰術安排</a>
@@ -308,6 +336,7 @@ footer li a:hover{color:var(--ink)}
 <main>
 <div class="wrap">
 
+<div class="panel on" id="home">
   <!-- HERO -->
   <div class="hero">
     <div>
@@ -324,7 +353,7 @@ footer li a:hover{color:var(--ink)}
           記分練習
         </a>
       </div>
-      <p style="margin-top:22px;font-size:13px;color:var(--faint)">開發者：明志科技大學 陳履賢</p>
+      <p class="credit">開發者　<b>明志科技大學　陳履賢</b></p>
     </div>
     <div class="visual">
       <span class="vlabel tl">COURT / 6.10 × 13.41 M</span>
@@ -413,8 +442,11 @@ footer li a:hover{color:var(--ink)}
     </div>
   </section>
 
+</div>
+
   <!-- GEAR -->
-  <section id="gear">
+  <section class="panel" id="gear">
+    <div class="pagetop"><button class="backlink" data-go="home"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>回首頁</button></div>
     <div class="shead rv">
       <span class="eyebrow">01 / EQUIPMENT & COURT</span>
       <h2>球場：先認識「廚房」</h2>
@@ -498,10 +530,12 @@ footer li a:hover{color:var(--ink)}
         </dl>
       </div>
     </div>
+      <div class="pagenav"><button data-go="home">← 首頁</button><button data-go="skills">動作示例 →</button></div>
   </section>
 
   <!-- SKILLS -->
-  <section id="skills">
+  <section class="panel" id="skills">
+    <div class="pagetop"><button class="backlink" data-go="home"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>回首頁</button></div>
     <div class="shead rv">
       <span class="eyebrow">02 / SKILLS</span>
       <h2>動作示例</h2>
@@ -511,10 +545,12 @@ footer li a:hover{color:var(--ink)}
       <div class="skilllist" id="skilllist"></div>
       <article class="skillcard glass" id="skillcard" aria-live="polite"></article>
     </div>
+      <div class="pagenav"><button data-go="gear">← 器材與球場</button><button data-go="tactics">戰術安排 →</button></div>
   </section>
 
   <!-- TACTICS -->
-  <section id="tactics">
+  <section class="panel" id="tactics">
+    <div class="pagetop"><button class="backlink" data-go="home"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>回首頁</button></div>
     <div class="shead rv">
       <span class="eyebrow">03 / TACTICS</span>
       <h2>雙打戰術：一個回合的五個階段</h2>
@@ -552,10 +588,12 @@ footer li a:hover{color:var(--ink)}
       <p>小隊討論用。先各自寫下想法，再打開看提示，最後到場上驗證。</p>
     </div>
     <div id="scenarios" class="rv"></div>
+      <div class="pagenav"><button data-go="skills">← 動作示例</button><button data-go="rules">規則與記分 →</button></div>
   </section>
 
   <!-- RULES -->
-  <section id="rules">
+  <section class="panel" id="rules">
+    <div class="pagetop"><button class="backlink" data-go="home"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>回首頁</button></div>
     <div class="shead rv">
       <span class="eyebrow">04 / RULES & SCORING</span>
       <h2>核心規則</h2>
@@ -581,10 +619,12 @@ footer li a:hover{color:var(--ink)}
         <li><a href="https://www.youtube.com/watch?v=HtaMX3f5zyE" target="_blank" rel="noopener">How to Serve Legally: Learn the 2 Pickleball Serves（裁判講解）</a></li>
       </ul>
     </div>
+      <div class="pagenav"><button data-go="tactics">← 戰術安排</button><button data-go="sem">課堂角色 →</button></div>
   </section>
 
   <!-- SEM -->
-  <section id="sem">
+  <section class="panel" id="sem">
+    <div class="pagetop"><button class="backlink" data-go="home"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>回首頁</button></div>
     <div class="shead rv">
       <span class="eyebrow">05 / SEASON & ROLES</span>
       <h2>運動教育模式：一個球季的節奏</h2>
@@ -601,6 +641,7 @@ footer li a:hover{color:var(--ink)}
       <p>勾選清單只保存在你自己的瀏覽器，用來提醒自己本週的工作。</p>
     </div>
     <div class="roles" id="roles"></div>
+      <div class="pagenav"><button data-go="rules">← 規則與記分</button><button data-go="home">回首頁 →</button></div>
   </section>
 
 </div>
@@ -635,7 +676,7 @@ footer li a:hover{color:var(--ink)}
         </ul>
       </div>
     </div>
-    <div class="fbot">PICKLE.LAB · 教學用途數位教材 · 開發者：明志科技大學 陳履賢</div>
+    <div class="fbot">PICKLE.LAB · 教學用途數位教材　｜　開發者　<b>明志科技大學　陳履賢</b></div>
   </div>
 </footer>
 
@@ -655,12 +696,27 @@ const cio=new IntersectionObserver(es=>es.forEach(e=>{
 }),{threshold:.6});
 document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
 
-/* nav active state */
+/* page routing */
+const panels=[...document.querySelectorAll('.panel')];
 const navA=[...document.querySelectorAll('.navlinks a')];
-const sio=new IntersectionObserver(es=>es.forEach(e=>{
-  if(e.isIntersecting) navA.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
-}),{rootMargin:'-45% 0px -50% 0px'});
-document.querySelectorAll('section[id]').forEach(s=>sio.observe(s));
+function showPage(id,push){
+  if(!document.getElementById(id))id='home';
+  panels.forEach(p=>p.classList.toggle('on',p.id===id));
+  navA.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));
+  document.getElementById(id).querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
+  if(push&&location.hash!=='#'+id)history.pushState(null,'','#'+id);
+  window.scrollTo({top:0,behavior:'auto'});
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-go]');
+  if(b){e.preventDefault();showPage(b.dataset.go,true);return}
+  const a=e.target.closest('a[href^="#"]');
+  if(a&&document.getElementById(a.getAttribute('href').slice(1))){e.preventDefault();showPage(a.getAttribute('href').slice(1),true)}
+});
+addEventListener('hashchange',()=>showPage(location.hash.slice(1)||'home'));
+showPage(location.hash.slice(1)||'home');
+
+/* (unused) nav active state */
 
 /* ambient dust */
 (function(){
@@ -711,11 +767,20 @@ const vids={"握拍": [["Grip and Ready Position Fundamentals (Third Shot Sports
 const enq={"握拍": "pickleball continental grip tutorial", "準備姿勢": "pickleball ready position", "發球": "pickleball legal serve tutorial", "接發球": "pickleball return of serve", "Dink（吊小球）": "how to dink pickleball", "第三拍 Drop": "pickleball third shot drop", "抽球（Drive）": "pickleball drive technique", "截擊": "pickleball volley technique", "挑高球（Lob）": "pickleball lob shot", "高壓扣殺": "pickleball overhead smash", "Reset（重置球）": "pickleball reset shot"};
 let curSkill=0;
 const PLAY='<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>';
+function ytid(u){const m=u.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);return m?m[1]:null}
+function card(title,url){
+  const id=ytid(url);
+  const kind=url.includes('/playlist')?'PLAYLIST':url.includes('/results')?'SEARCH':url.includes('/shorts/')?'SHORTS':'YOUTUBE';
+  const img=id?`<img src="https://i.ytimg.com/vi/${id}/mqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'">`:'';
+  return `<a class="vidcard" href="${url}" target="_blank" rel="noopener">
+    <span class="thumb">${img}<span class="pl"><span>${PLAY}</span></span></span>
+    <span class="cap">${title}<i>${kind}</i></span></a>`;
+}
 function renderSkill(){
   const s=skills[curSkill];
   const list=(vids[s.n]||[]);
-  const body=list.length?list.map(v=>`<a class="vidrow" href="${v[1]}" target="_blank" rel="noopener">${PLAY}<span>${v[0]}</span></a>`).join('')
-    :`<p class="hint" style="margin:0 0 8px">這個動作還沒有指定影片，先用搜尋結果參考。</p><a class="vidrow" href="https://www.youtube.com/results?search_query=${encodeURIComponent(enq[s.n]||('pickleball '+s.n))}" target="_blank" rel="noopener">${PLAY}<span>Search: ${enq[s.n]||s.n}</span></a>`;
+  const body=list.length?`<div class="vidgrid">${list.map(v=>card(v[0],v[1])).join('')}</div>`
+    :`<p class="hint" style="margin:0 0 10px">這個動作還沒有指定影片，先用搜尋結果參考。</p><div class="vidgrid">${card('YouTube 搜尋：'+(enq[s.n]||s.n),'https://www.youtube.com/results?search_query='+encodeURIComponent(enq[s.n]||('pickleball '+s.n)))}</div>`;
   document.getElementById('skillcard').innerHTML=`<h3>${s.n}</h3><p class="purpose">${s.p}</p>
   <div class="cols"><div><h4>TECHNIQUE / 技術要點</h4><ol>${s.k.map(x=>`<li>${x}</li>`).join('')}</ol></div>
   <div class="err"><h4>COMMON ERRORS / 常見錯誤</h4><ul>${s.e.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
