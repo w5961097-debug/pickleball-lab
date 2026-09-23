@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PICKLE.LAB ｜ 匹克球數位教材</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05070D; --bg2:#080C14; --graphite:#11161F; --ink:#EAF0F7; --muted:#8996A8; --faint:#5C6878;
+  --blue:#3B7BFF; --cyan:#2DD4E8; --violet:#8B7BFF;
+  --glass:rgba(255,255,255,.035); --glass2:rgba(255,255,255,.055); --edge:rgba(255,255,255,.09);
+  --edge2:rgba(255,255,255,.16);
+  --good:#3FD69C; --bad:#FF6B81;
+  --r:14px;
+  --display:"Space Grotesk","Noto Sans TC",system-ui,sans-serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  box-sizing:border-box; color-scheme:dark;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 86px);background:var(--bg)}
+body{margin:0;color:var(--ink);font-family:var(--body);font-weight:300;line-height:1.75;font-size:16px;background:var(--bg);overflow-x:hidden}
+img,svg{max-width:100%}
+a{color:var(--cyan);text-decoration:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* ambient background */
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.bg .grid{position:absolute;inset:-20%;
+  background-image:linear-gradient(rgba(255,255,255,.028) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.028) 1px,transparent 1px);
+  background-size:68px 68px;
+  mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 10%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 10%,transparent 75%);
+  animation:drift 90s linear infinite}
+@keyframes drift{to{transform:translate3d(68px,68px,0)}}
+.bg .orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.5}
+.orb.a{width:620px;height:620px;top:-220px;right:-140px;background:radial-gradient(circle,rgba(59,123,255,.42),transparent 70%);animation:float 34s ease-in-out infinite}
+.orb.b{width:520px;height:520px;top:46%;left:-200px;background:radial-gradient(circle,rgba(139,123,255,.3),transparent 70%);animation:float 46s ease-in-out infinite reverse}
+.orb.c{width:460px;height:460px;bottom:-160px;right:10%;background:radial-gradient(circle,rgba(45,212,232,.2),transparent 70%);animation:float 58s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,50px)}}
+canvas#dust{position:absolute;inset:0;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){.bg .grid,.orb{animation:none}canvas#dust{display:none}}
+
+/* nav */
+header.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50}
+.navin{margin:14px auto 0;max-width:1160px;width:calc(100% - 32px);display:flex;align-items:center;gap:20px;
+  padding:10px 12px 10px 20px;border:1px solid var(--edge);border-radius:999px;
+  background:rgba(8,12,20,.6);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3)}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:17px;color:var(--ink)}
+.logo svg{width:22px;height:22px;flex:none}
+.navlinks{display:flex;gap:2px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{flex:none;color:var(--muted);font-size:14.5px;font-weight:400;padding:8px 14px;border-radius:999px;transition:color .25s,background .25s}
+.navlinks a:hover,.navlinks a.active{color:var(--ink);background:var(--glass2)}
+
+/* buttons */
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;font-family:var(--body);font-weight:500;font-size:15px;
+  padding:13px 26px;border-radius:999px;border:1px solid transparent;cursor:pointer;overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s}
+.btn svg{width:17px;height:17px;flex:none}
+.btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transition:left .7s ease}
+.btn:hover::after{left:130%}
+.btn-primary{background:linear-gradient(120deg,var(--blue),var(--violet));color:#fff;box-shadow:0 8px 26px -10px rgba(59,123,255,.9)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -10px rgba(59,123,255,1)}
+.btn-ghost{background:var(--glass);color:var(--ink);border-color:var(--edge)}
+.btn-ghost:hover{transform:translateY(-2px);border-color:var(--edge2);background:var(--glass2)}
+
+/* hero */
+.hero{padding:86px 0 40px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+.tagline{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-size:12.5px;letter-spacing:.14em;color:var(--cyan);
+  border:1px solid rgba(45,212,232,.28);background:rgba(45,212,232,.06);padding:6px 15px;border-radius:999px;margin-bottom:26px}
+.tagline i{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+h1{font-weight:900;font-size:clamp(38px,5.6vw,62px);line-height:1.1;letter-spacing:-.01em;margin:0 0 20px}
+h1 span{background:linear-gradient(100deg,#fff 20%,var(--cyan) 55%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:17.5px;max-width:46ch;margin:0 0 34px}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.visual{position:relative;border:1px solid var(--edge);border-radius:22px;padding:22px;
+  background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 30px 70px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)}
+.visual svg{display:block;width:100%;height:auto}
+.scanline{animation:scan 7s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes scan{0%,100%{transform:translateY(0);opacity:0}8%{opacity:.85}50%{transform:translateY(200px);opacity:.85}58%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.scanline,.tagline i{animation:none}}
+.vlabel{position:absolute;font-family:var(--display);font-size:11px;letter-spacing:.12em;color:var(--faint)}
+.vlabel.tl{top:14px;left:20px}
+.vlabel.br{bottom:14px;right:20px}
+
+/* sections */
+section{padding:74px 0;scroll-margin-top:100px}
+.shead{margin-bottom:38px;max-width:62ch}
+.eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.16em;color:var(--cyan);display:block;margin-bottom:12px}
+h2{font-weight:700;font-size:clamp(26px,3.2vw,36px);line-height:1.25;margin:0 0 12px;letter-spacing:-.01em}
+.shead p{color:var(--muted);margin:0}
+h3{font-weight:700;font-size:19px;margin:0 0 8px}
+
+/* glass card base */
+.glass{border:1px solid var(--edge);border-radius:var(--r);
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+/* feature cards */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.feat{padding:28px 24px 26px;transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s;display:block;color:inherit}
+.feat:hover{transform:translateY(-6px);border-color:rgba(59,123,255,.4);
+  box-shadow:0 22px 50px -28px rgba(59,123,255,.85),inset 0 1px 0 rgba(255,255,255,.1)}
+.feat .ico{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;border:1px solid var(--edge);
+  background:rgba(59,123,255,.09);margin-bottom:18px}
+.feat .ico svg{width:20px;height:20px;stroke:var(--cyan);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.feat p{color:var(--muted);font-size:15px;margin:0}
+.feat .go{font-family:var(--display);font-size:12px;letter-spacing:.1em;color:var(--faint);margin-top:16px;display:block}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden}
+.stat{background:rgba(8,12,20,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:32px 26px;text-align:center}
+.stat .n{font-family:var(--display);font-weight:700;font-size:44px;line-height:1;
+  background:linear-gradient(140deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .u{font-size:14px;color:var(--muted);margin-top:9px}
+
+/* court + zone */
+.courtbox{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:start}
+.courtsvg{padding:18px;border-radius:var(--r);border:1px solid var(--edge);background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.01))}
+.courtsvg svg{display:block;width:100%;height:auto}
+.zone{cursor:pointer;transition:opacity .25s}
+.zone:hover{opacity:.72}
+.zone.sel{opacity:.6}
+.zoneinfo{padding:26px;min-height:240px}
+.zoneinfo .big{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:6px 0 14px;
+  background:linear-gradient(140deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.zoneinfo p{margin:0 0 10px;font-size:15px}
+.hint{font-size:14px;color:var(--faint)}
+
+/* equipment */
+.eqgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;margin-top:22px}
+.eq{padding:26px 24px;transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s}
+.eq:hover{transform:translateY(-5px);border-color:rgba(45,212,232,.34);box-shadow:0 20px 46px -28px rgba(45,212,232,.7)}
+.eq p{font-size:15px;color:var(--muted);margin:0}
+.eq dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:14px 0 0;font-size:14.5px}
+.eq dt{color:var(--faint)}
+.eq dd{margin:0;color:var(--ink)}
+.spec{font-family:var(--display);font-weight:600;color:var(--cyan)}
+
+/* skills */
+.skilllayout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:26px;align-items:start}
+.skilllist{display:flex;flex-direction:column;gap:3px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 96px)}
+.skilllist button{font:inherit;font-weight:400;text-align:left;background:transparent;border:1px solid transparent;padding:9px 15px;
+  color:var(--muted);cursor:pointer;border-radius:10px;transition:.25s}
+.skilllist button:hover{color:var(--ink);background:var(--glass)}
+.skilllist button[aria-current="true"]{color:var(--ink);font-weight:500;background:var(--glass2);border-color:var(--edge)}
+.skillcard{padding:30px}
+.skillcard h3{font-size:25px;margin-bottom:10px}
+.purpose{font-size:16.5px;color:var(--muted);margin:0 0 24px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.cols h4{margin:0 0 10px;font-family:var(--display);font-size:12px;letter-spacing:.12em;color:var(--cyan)}
+.err h4{color:var(--bad)}
+.cols ol,.cols ul{margin:0;padding-left:1.25em;font-size:15px;color:var(--ink)}
+.cols li{margin-bottom:7px}
+.coachcue{margin-top:24px;padding:16px 18px;border-radius:11px;border:1px solid rgba(139,123,255,.25);
+  background:rgba(139,123,255,.07);font-size:15px}
+.coachcue b{font-family:var(--display);font-size:11.5px;letter-spacing:.12em;color:var(--violet);display:block;margin-bottom:5px;font-weight:600}
+.vids{margin-top:24px}
+.vids h4{margin:0 0 10px;font-family:var(--display);font-size:12px;letter-spacing:.12em;color:var(--cyan)}
+.vidrow{display:flex;align-items:center;gap:13px;padding:12px 16px;margin-bottom:8px;border-radius:11px;
+  border:1px solid var(--edge);background:var(--glass);color:var(--ink);font-size:14.5px;transition:.28s}
+.vidrow:hover{border-color:rgba(45,212,232,.4);background:var(--glass2);transform:translateX(3px)}
+.vidrow svg{width:16px;height:16px;flex:none;stroke:var(--cyan);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* tactics */
+.tac{display:grid;grid-template-columns:minmax(0,290px) minmax(0,1fr);gap:34px;align-items:start}
+.player{transition:transform .7s cubic-bezier(.3,.05,.2,1)}
+@media (prefers-reduced-motion:reduce){.player{transition:none}}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.steps button{font:inherit;font-size:14px;font-weight:400;border:1px solid var(--edge);background:var(--glass);color:var(--muted);
+  padding:8px 16px;border-radius:999px;cursor:pointer;transition:.28s}
+.steps button:hover{color:var(--ink);border-color:var(--edge2)}
+.steps button[aria-pressed="true"]{background:linear-gradient(120deg,rgba(59,123,255,.9),rgba(139,123,255,.9));color:#fff;border-color:transparent;
+  box-shadow:0 6px 20px -8px rgba(59,123,255,.9)}
+.phase h3{font-size:23px}
+.phase p{color:var(--muted);margin:0}
+.think{margin:22px 0 10px;padding:16px 18px;border-radius:11px;border:1px solid rgba(45,212,232,.24);background:rgba(45,212,232,.06)}
+.think b{font-family:var(--display);font-size:11.5px;letter-spacing:.12em;color:var(--cyan);display:block;margin-bottom:5px;font-weight:600}
+.think span{font-size:15px}
+.legend{display:flex;gap:18px;font-size:13.5px;color:var(--faint);margin-top:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:6px}
+details{border:1px solid var(--edge);border-radius:12px;padding:0 20px;margin-bottom:10px;background:var(--glass);transition:border-color .3s}
+details[open]{border-color:rgba(59,123,255,.33)}
+summary{cursor:pointer;font-weight:400;padding:16px 0;list-style:none;display:flex;align-items:center;gap:12px;font-size:15.5px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"";width:9px;height:9px;flex:none;border-right:1.5px solid var(--cyan);border-bottom:1.5px solid var(--cyan);
+  transform:rotate(-45deg);transition:transform .3s}
+details[open] summary::before{transform:rotate(45deg)}
+details>div{padding:0 0 18px 21px;color:var(--muted);font-size:15px}
+
+/* rules widgets */
+.rulegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:32px}
+.score{padding:28px;border-radius:var(--r);border:1px solid rgba(59,123,255,.25);
+  background:linear-gradient(165deg,rgba(59,123,255,.1),rgba(8,12,20,.6));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.score .lbl{font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--faint)}
+.score .call{font-family:var(--display);font-weight:700;font-size:70px;line-height:1.05;letter-spacing:.02em;margin:6px 0 2px;
+  background:linear-gradient(130deg,#fff,var(--cyan) 65%,var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.score .who{color:var(--muted);font-size:15px;margin:2px 0 20px}
+.score .teams{display:flex;gap:12px;margin-bottom:18px}
+.score .team{flex:1;border-radius:11px;padding:13px 15px;border:1px solid var(--edge);background:var(--glass);transition:.3s}
+.score .team.serve{border-color:rgba(45,212,232,.5);box-shadow:0 0 22px -8px rgba(45,212,232,.8)}
+.score .team .tn{font-size:13px;color:var(--faint)}
+.score .team .n{font-family:var(--display);font-weight:700;font-size:32px;line-height:1.1}
+.score .team .p{font-size:12.5px;color:var(--faint)}
+.score .btns{display:flex;flex-wrap:wrap;gap:9px}
+.score .btns button{font:inherit;font-size:14px;font-weight:400;border-radius:999px;padding:10px 18px;cursor:pointer;border:1px solid transparent;transition:.28s}
+.b-win{background:linear-gradient(120deg,var(--blue),var(--violet));color:#fff}
+.b-win:hover:not(:disabled){transform:translateY(-2px)}
+.b-lose{background:var(--glass2);color:var(--ink);border-color:var(--edge)!important}
+.b-ghost{background:transparent;color:var(--muted);border-color:var(--edge)!important}
+.score button:disabled{opacity:.35;cursor:default}
+.score .log{font-size:13.5px;color:var(--faint);margin-top:16px;min-height:1.6em}
+.quiz{padding:28px}
+.quiz .q{font-size:17px;margin:10px 0 20px}
+.quiz .opts{display:flex;gap:11px}
+.quiz .opts button{flex:1;font:inherit;font-size:14.5px;font-weight:400;padding:14px;border-radius:11px;border:1px solid var(--edge);
+  background:var(--glass);color:var(--ink);cursor:pointer;transition:.28s}
+.quiz .opts button:not(:disabled):hover{border-color:rgba(45,212,232,.45);background:var(--glass2);transform:translateY(-2px)}
+.quiz .opts button:disabled{opacity:.45}
+.quiz .fb{margin-top:18px;min-height:3.2em;font-size:15px;color:var(--muted)}
+.quiz .fb .v{font-weight:500}
+.ok{color:var(--good)} .no{color:var(--bad)}
+.quiz .nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:13.5px;color:var(--faint)}
+.quiz .nav button{font:inherit;border:0;background:none;color:var(--cyan);cursor:pointer;padding:0}
+.links{margin-top:26px;padding:22px 24px}
+.links ul{margin:10px 0 0;padding-left:1.2em;color:var(--muted);font-size:15px}
+.links li{margin-bottom:6px}
+
+/* season + roles */
+.season{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--edge);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden;margin-bottom:34px}
+.season div{background:rgba(8,12,20,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:24px 22px}
+.season .n{font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--cyan)}
+.season b{display:block;font-size:17px;font-weight:700;margin:6px 0 4px}
+.season p{margin:0;font-size:14px;color:var(--muted)}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.role{padding:26px 24px;transition:transform .35s cubic-bezier(.2,.8,.3,1),box-shadow .35s,border-color .35s}
+.role:hover{transform:translateY(-5px);border-color:rgba(139,123,255,.36);box-shadow:0 20px 46px -28px rgba(139,123,255,.75)}
+.role>p{color:var(--muted);font-size:14.5px;margin:0 0 12px}
+.role label{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;margin:9px 0;cursor:pointer;color:var(--muted);transition:color .25s}
+.role label:hover{color:var(--ink)}
+.role input{margin-top:7px;accent-color:var(--blue)}
+
+/* footer */
+footer{border-top:1px solid var(--edge);margin-top:40px;padding:48px 0 44px}
+.fgrid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:34px}
+footer p{color:var(--faint);font-size:14px;margin:12px 0 0;max-width:42ch}
+footer h4{font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--muted);margin:0 0 14px;font-weight:600}
+footer ul{list-style:none;margin:0;padding:0;font-size:14.5px}
+footer li{margin-bottom:8px}
+footer li a{color:var(--muted);transition:color .25s}
+footer li a:hover{color:var(--ink)}
+.fbot{margin-top:38px;padding-top:22px;border-top:1px solid var(--edge);font-size:13px;color:var(--faint)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.8,.3,1),transform .8s cubic-bezier(.2,.8,.3,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:38px;padding-top:56px}
+  .courtbox,.tac,.rulegrid,.skilllayout,.fgrid{grid-template-columns:1fr}
+  .stats,.season{grid-template-columns:1fr 1fr}
+  .skilllist{position:static;flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  .skilllist button{flex:none;border:1px solid transparent}
+  .cols{grid-template-columns:1fr}
+  .tac .courtsvg{max-width:300px}
+  .navlinks{display:none}
+  .navin{justify-content:space-between}
+  .score .call{font-size:56px}
+  section{padding:56px 0}
+}
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <div class="grid"></div>
+  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+  <canvas id="dust"></canvas>
+</div>
+
+<header class="nav">
+  <div class="navin">
+    <span class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2DD4E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9" r="6"/><path d="M12 15v6M9 21h6M9.5 7.5h.01M14.5 7.5h.01M12 11h.01"/></svg>
+      PICKLE.LAB
+    </span>
+    <nav class="navlinks">
+      <a href="#gear">器材與球場</a>
+      <a href="#skills">動作示例</a>
+      <a href="#tactics">戰術安排</a>
+      <a href="#rules">規則與記分</a>
+      <a href="#sem">課堂角色</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <span class="tagline"><i></i>SPORT EDUCATION MODEL · PICKLEBALL</span>
+      <h1>把一整個球季的<br><span>匹克球知識</span>放進一頁</h1>
+      <p class="sub">器材規格、動作要領、雙打戰術與規則判斷，全部可以在課前預習、課中對照、賽季中查用。每個模組都能互動操作，不只是讀完就算。</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#gear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          開始學習
+        </a>
+        <a class="btn btn-ghost" href="#rules">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 10h16M9 10v9"/></svg>
+          記分練習
+        </a>
+      </div>
+      <p style="margin-top:22px;font-size:13px;color:var(--faint)">開發者：明志科技大學 陳履賢</p>
+    </div>
+    <div class="visual">
+      <span class="vlabel tl">COURT / 6.10 × 13.41 M</span>
+      <svg viewBox="-20 -16 480 232" role="img" aria-label="匹克球場立體示意圖">
+        <defs>
+          <linearGradient id="gCourt" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#132238"/><stop offset="1" stop-color="#0B111C"/>
+          </linearGradient>
+          <linearGradient id="gKit" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="rgba(59,123,255,.35)"/><stop offset="1" stop-color="rgba(139,123,255,.16)"/>
+          </linearGradient>
+          <linearGradient id="gScan" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="transparent"/><stop offset=".5" stop-color="#2DD4E8"/><stop offset="1" stop-color="transparent"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="440" height="200" rx="3" fill="url(#gCourt)"/>
+        <rect x="150" y="0" width="140" height="200" fill="url(#gKit)"/>
+        <g stroke="rgba(234,240,247,.5)" stroke-width="1.2" fill="none">
+          <rect x="0" y="0" width="440" height="200" rx="3"/>
+          <line x1="150" y1="0" x2="150" y2="200"/><line x1="290" y1="0" x2="290" y2="200"/>
+          <line x1="0" y1="100" x2="150" y2="100"/><line x1="290" y1="100" x2="440" y2="100"/>
+        </g>
+        <line x1="220" y1="-8" x2="220" y2="208" stroke="#2DD4E8" stroke-width="1.6" opacity=".85"/>
+        <line x1="220" y1="-8" x2="220" y2="208" stroke="#2DD4E8" stroke-width="6" opacity=".14"/>
+        <path d="M60 150 Q150 40 205 96" stroke="rgba(45,212,232,.75)" stroke-width="1.4" fill="none" stroke-dasharray="4 5"/>
+        <path d="M235 104 Q320 160 385 60" stroke="rgba(139,123,255,.7)" stroke-width="1.4" fill="none" stroke-dasharray="4 5"/>
+        <circle cx="60" cy="150" r="4" fill="#2DD4E8"/><circle cx="385" cy="60" r="4" fill="#8B7BFF"/>
+        <g class="scanline"><rect x="0" y="0" width="440" height="1.5" fill="url(#gScan)" opacity=".8"/></g>
+        <g font-family="Space Grotesk, sans-serif" font-size="9" fill="rgba(234,240,247,.45)" letter-spacing="1.2">
+          <text x="186" y="16">NVZ</text><text x="258" y="16">NVZ</text>
+          <text x="6" y="196">BASELINE</text><text x="384" y="196">BASELINE</text>
+        </g>
+      </svg>
+      <span class="vlabel br">NET 86.4 / 91.4 CM</span>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="modules" style="padding-top:34px">
+    <div class="shead rv">
+      <span class="eyebrow">MODULES</span>
+      <h2>五個模組，對應一個球季的教學流程</h2>
+      <p>從認識器材到賽季分工，每個模組都有可以動手操作的部分。</p>
+    </div>
+    <div class="features">
+      <a class="feat glass rv" href="#gear">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 4v16M3 12h18"/></svg></span>
+        <h3>器材與球場</h3>
+        <p>可點選的球場圖、球拍與球的官方規格、安全提醒。</p>
+        <span class="go">01 / EQUIPMENT</span>
+      </a>
+      <a class="feat glass rv" href="#skills">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <h3>動作示例</h3>
+        <p>11 個動作的技術要點、常見錯誤與英文示範影片。</p>
+        <span class="go">02 / SKILLS</span>
+      </a>
+      <a class="feat glass rv" href="#tactics">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 18V7M10 18v-6M16 18v-9M4 18h16"/></svg></span>
+        <h3>戰術安排</h3>
+        <p>雙打回合五階段動態站位圖，附小隊思考問題。</p>
+        <span class="go">03 / TACTICS</span>
+      </a>
+      <a class="feat glass rv" href="#rules">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6"/></svg></span>
+        <h3>規則與記分</h3>
+        <p>三碼報分模擬器與九題規則判斷，裁判組自我檢核。</p>
+        <span class="go">04 / RULES</span>
+      </a>
+      <a class="feat glass rv" href="#sem">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0112 0M16 6a3 3 0 010 6M18 20a6 6 0 00-3-5"/></svg></span>
+        <h3>課堂角色</h3>
+        <p>球季四階段與六個職務的任務清單。</p>
+        <span class="go">05 / ROLES</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section style="padding-top:0">
+    <div class="stats rv">
+      <div class="stat"><div class="n" data-count="11">0</div><div class="u">技術動作單元</div></div>
+      <div class="stat"><div class="n" data-count="5">0</div><div class="u">雙打回合階段</div></div>
+      <div class="stat"><div class="n" data-count="9">0</div><div class="u">規則判斷情境</div></div>
+      <div class="stat"><div class="n" data-count="6">0</div><div class="u">球季輪值角色</div></div>
+    </div>
+  </section>
+
+  <!-- GEAR -->
+  <section id="gear">
+    <div class="shead rv">
+      <span class="eyebrow">01 / EQUIPMENT & COURT</span>
+      <h2>球場：先認識「廚房」</h2>
+      <p>匹克球場與羽球雙打場同樣大小。點選場上的區域，看看每一塊在規則與戰術上的意義。</p>
+    </div>
+    <div class="courtbox rv">
+      <div class="courtsvg">
+        <svg viewBox="-12 -12 464 224" role="img" aria-label="匹克球場俯視圖，可點選區域">
+          <rect class="zone" data-z="svc" x="0" y="0" width="150" height="100" fill="#14202F"/>
+          <rect class="zone" data-z="svc" x="0" y="100" width="150" height="100" fill="#14202F"/>
+          <rect class="zone" data-z="kitchen" x="150" y="0" width="70" height="200" fill="#1F3B66"/>
+          <rect class="zone" data-z="kitchen" x="220" y="0" width="70" height="200" fill="#1F3B66"/>
+          <rect class="zone" data-z="svc" x="290" y="0" width="150" height="100" fill="#14202F"/>
+          <rect class="zone" data-z="svc" x="290" y="100" width="150" height="100" fill="#14202F"/>
+          <g stroke="rgba(234,240,247,.55)" stroke-width="1.4" fill="none" pointer-events="none">
+            <rect x="0" y="0" width="440" height="200"/>
+            <line x1="150" y1="0" x2="150" y2="200"/><line x1="290" y1="0" x2="290" y2="200"/>
+            <line x1="0" y1="100" x2="150" y2="100"/><line x1="290" y1="100" x2="440" y2="100"/>
+          </g>
+          <rect class="zone" data-z="base" x="-10" y="0" width="12" height="200" fill="transparent"/>
+          <rect class="zone" data-z="base" x="438" y="0" width="12" height="200" fill="transparent"/>
+          <rect class="zone" data-z="kline" x="145" y="0" width="10" height="200" fill="transparent"/>
+          <rect class="zone" data-z="kline" x="285" y="0" width="10" height="200" fill="transparent"/>
+          <line class="zone" data-z="net" x1="220" y1="-10" x2="220" y2="210" stroke="#2DD4E8" stroke-width="5" opacity=".9"/>
+          <g font-family="Space Grotesk, sans-serif" font-size="11" fill="rgba(234,240,247,.6)" pointer-events="none" text-anchor="middle" letter-spacing="1">
+            <text x="185" y="104">NVZ</text><text x="255" y="104">NVZ</text>
+            <text x="75" y="54">SERVICE</text><text x="75" y="154">SERVICE</text>
+            <text x="365" y="54">SERVICE</text><text x="365" y="154">SERVICE</text>
+          </g>
+        </svg>
+      </div>
+      <div class="zoneinfo glass" id="zoneinfo" aria-live="polite">
+        <h3>整個球場</h3>
+        <div class="big">6.10 × 13.41 m</div>
+        <p>即 20 × 44 英尺，單打與雙打使用同一個場地。所有線寬都算在界內，壓線球是好球。</p>
+        <p class="hint">點選左邊圖上的廚房、發球區、廚房線、底線或球網。</p>
+      </div>
+    </div>
+
+    <div class="shead rv" style="margin-top:58px">
+      <h2>器材規格</h2>
+      <p>以下依 USA Pickleball 官方規則整理。上課使用學校器材即可，想自購時可以參考選購建議。</p>
+    </div>
+    <div class="eqgrid">
+      <div class="eq glass rv">
+        <h3>球拍</h3>
+        <p>表面平滑、無彈性網線的實心拍。長度加寬度合計不超過 <span class="spec">24 in / 61 cm</span>，長度不超過 <span class="spec">17 in / 43 cm</span>，厚度與重量沒有上限。</p>
+        <dl>
+          <dt>常見重量</dt><dd>約 210–240 g；輕拍好控制，重拍較有力量</dd>
+          <dt>拍面材質</dt><dd>玻璃纖維、碳纖維為主</dd>
+          <dt>握把</dt><dd>握住時食指與手掌間約留一指寬</dd>
+          <dt>初學建議</dt><dd>中等重量、拍面較寬，甜區大、容錯高</dd>
+        </dl>
+      </div>
+      <div class="eq glass rv">
+        <h3>球</h3>
+        <p>有圓孔的硬塑膠球，直徑 <span class="spec">7.3–7.5 cm</span>，重量 <span class="spec">22–26.5 g</span>，孔數 26–40 個。</p>
+        <dl>
+          <dt>室外球</dt><dd>約 40 個小孔，材質較硬，抗風</dd>
+          <dt>室內球</dt><dd>約 26 個較大孔，較軟、彈跳較慢</dd>
+          <dt>顏色</dt><dd>單一顏色即可，常用亮黃綠色以利辨識</dd>
+          <dt>注意</dt><dd>室外球在低溫時容易裂，裂球請立即更換</dd>
+        </dl>
+      </div>
+      <div class="eq glass rv">
+        <h3>球網</h3>
+        <p>中央高 <span class="spec">86.4 cm / 34 in</span>，兩側網柱處高 <span class="spec">91.4 cm / 36 in</span>，比網球網低。</p>
+        <dl>
+          <dt>上課檢查</dt><dd>用球拍量網高：拍長加拍寬約為中央網高</dd>
+          <dt>觸網</dt><dd>球在場上時，身體或球拍碰到網或網柱即失誤</dd>
+        </dl>
+      </div>
+      <div class="eq glass rv">
+        <h3>服裝與安全</h3>
+        <p>匹克球大量橫向移動與急停，鞋子比球拍更影響安全。</p>
+        <dl>
+          <dt>鞋</dt><dd>室內球鞋或網球鞋，避免跑鞋（側向支撐不足）</dd>
+          <dt>護目</dt><dd>廚房線近距離對打時建議配戴運動護目鏡</dd>
+          <dt>場地</dt><dd>課前清空場上散落的球，避免踩球扭傷</dd>
+          <dt>熱身</dt><dd>著重腳踝、小腿、肩關節與手腕</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="shead rv">
+      <span class="eyebrow">02 / SKILLS</span>
+      <h2>動作示例</h2>
+      <p>每個動作列出目的、技術要點與常見錯誤。擔任小隊教練時，可以用「同儕觀察重點」檢核隊友的動作。示範影片為英文頻道。</p>
+    </div>
+    <div class="skilllayout rv">
+      <div class="skilllist" id="skilllist"></div>
+      <article class="skillcard glass" id="skillcard" aria-live="polite"></article>
+    </div>
+  </section>
+
+  <!-- TACTICS -->
+  <section id="tactics">
+    <div class="shead rv">
+      <span class="eyebrow">03 / TACTICS</span>
+      <h2>雙打戰術：一個回合的五個階段</h2>
+      <p>匹克球雙打的核心是「兩人一起前進到廚房線」。依序點選各階段，觀察四位球員的站位如何變化，再回答思考問題。</p>
+    </div>
+    <div class="tac rv">
+      <div>
+        <div class="courtsvg">
+          <svg viewBox="-24 -34 248 508" role="img" aria-label="雙打站位示意圖">
+            <rect x="0" y="0" width="200" height="440" rx="3" fill="#14202F"/>
+            <rect x="0" y="150" width="200" height="140" fill="rgba(59,123,255,.22)"/>
+            <g stroke="rgba(234,240,247,.5)" stroke-width="1.4" fill="none">
+              <rect x="0" y="0" width="200" height="440" rx="3"/>
+              <line x1="0" y1="150" x2="200" y2="150"/><line x1="0" y1="290" x2="200" y2="290"/>
+              <line x1="100" y1="0" x2="100" y2="150"/><line x1="100" y1="290" x2="100" y2="440"/>
+            </g>
+            <line x1="-10" y1="220" x2="210" y2="220" stroke="#2DD4E8" stroke-width="3" opacity=".9"/>
+            <path id="ballpath" d="" fill="none" stroke="#2DD4E8" stroke-width="2" stroke-dasharray="5 5" opacity=".85"/>
+            <g id="players"></g>
+          </svg>
+        </div>
+        <div class="legend">
+          <span><span class="dot" style="background:#8B7BFF"></span>接發球方</span>
+          <span><span class="dot" style="background:#2DD4E8"></span>發球方</span>
+        </div>
+      </div>
+      <div>
+        <div class="steps" id="steps" role="group" aria-label="回合階段"></div>
+        <div class="phase" id="phase" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="shead rv" style="margin-top:58px">
+      <h2>戰術情境卡</h2>
+      <p>小隊討論用。先各自寫下想法，再打開看提示，最後到場上驗證。</p>
+    </div>
+    <div id="scenarios" class="rv"></div>
+  </section>
+
+  <!-- RULES -->
+  <section id="rules">
+    <div class="shead rv">
+      <span class="eyebrow">04 / RULES & SCORING</span>
+      <h2>核心規則</h2>
+      <p>以下以 USA Pickleball 官方規則的雙打標準賽制（發球得分制）為準，正式比賽請以當年度規則書為依據。</p>
+    </div>
+    <div id="rulelist" class="rv"></div>
+
+    <div class="shead rv" style="margin-top:58px">
+      <h2>記分練習與規則判斷</h2>
+      <p>左邊模擬雙打記分，記分員練習報分；右邊是情境判斷題，裁判組可以用來自我檢核。</p>
+    </div>
+    <div class="rulegrid" style="margin-top:0">
+      <div class="score rv" id="score"></div>
+      <div class="quiz glass rv" id="quiz"></div>
+    </div>
+
+    <div class="links glass rv">
+      <h3>官方資料與英文影片</h3>
+      <ul>
+        <li><a href="https://usapickleball.org/what-is-pickleball/official-rules/" target="_blank" rel="noopener">USA Pickleball 官方規則頁</a>：規則書、年度異動與裁判案例彙編</li>
+        <li><a href="https://www.youtube.com/watch?v=HVTQ-_vQhK8" target="_blank" rel="noopener">What is the Kitchen in Pickleball（USA Pickleball 官方頻道）</a></li>
+        <li><a href="https://www.youtube.com/watch?v=JCXWSDlDL38" target="_blank" rel="noopener">Rules to Remember at the Pickleball Kitchen（裁判講解）</a></li>
+        <li><a href="https://www.youtube.com/watch?v=HtaMX3f5zyE" target="_blank" rel="noopener">How to Serve Legally: Learn the 2 Pickleball Serves（裁判講解）</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SEM -->
+  <section id="sem">
+    <div class="shead rv">
+      <span class="eyebrow">05 / SEASON & ROLES</span>
+      <h2>運動教育模式：一個球季的節奏</h2>
+      <p>整學期以固定小隊進行，每位同學除了是球員，也輪流擔任一項職務。</p>
+    </div>
+    <div class="season rv">
+      <div><span class="n">PHASE 01</span><b>季前練習</b><p>分組、選角色、學習基本動作與規則</p></div>
+      <div><span class="n">PHASE 02</span><b>季前賽</b><p>小隊練習賽，熟悉記分與輪值</p></div>
+      <div><span class="n">PHASE 03</span><b>正式賽季</b><p>循環賽累積積分，紀錄數據</p></div>
+      <div><span class="n">PHASE 04</span><b>季後賽與頒獎</b><p>冠軍賽、公平競賽獎、角色表現獎</p></div>
+    </div>
+    <div class="shead rv">
+      <h2>角色與職責</h2>
+      <p>勾選清單只保存在你自己的瀏覽器，用來提醒自己本週的工作。</p>
+    </div>
+    <div class="roles" id="roles"></div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <span class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2DD4E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9" r="6"/><path d="M12 15v6M9 21h6M9.5 7.5h.01M14.5 7.5h.01M12 11h.01"/></svg>
+          PICKLE.LAB
+        </span>
+        <p>大學運動教育模式匹克球課程數位教材。規則內容依 USA Pickleball 2026 年版官方規則整理，如有差異以官方規則書為準。</p>
+      </div>
+      <div>
+        <h4>MODULES</h4>
+        <ul>
+          <li><a href="#gear">器材與球場</a></li>
+          <li><a href="#skills">動作示例</a></li>
+          <li><a href="#tactics">戰術安排</a></li>
+          <li><a href="#rules">規則與記分</a></li>
+          <li><a href="#sem">課堂角色</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>RESOURCES</h4>
+        <ul>
+          <li><a href="https://usapickleball.org/what-is-pickleball/official-rules/" target="_blank" rel="noopener">USA Pickleball 官方規則</a></li>
+          <li><a href="https://www.youtube.com/watch?v=HVTQ-_vQhK8" target="_blank" rel="noopener">Kitchen 規則影片</a></li>
+          <li><a href="https://www.youtube.com/watch?v=HtaMX3f5zyE" target="_blank" rel="noopener">合法發球影片</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbot">PICKLE.LAB · 教學用途數位教材 · 開發者：明志科技大學 陳履賢</div>
+  </div>
+</footer>
+
+<script>
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* reveal on scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach((el,i)=>{el.style.transitionDelay=(i%5*60)+'ms';io.observe(el)});
+
+/* count-up stats */
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return; cio.unobserve(e.target);
+  const t=+e.target.dataset.count; let n=0;
+  const step=()=>{n+=Math.max(1,Math.ceil(t/22)); if(n>=t){e.target.textContent=t;return} e.target.textContent=n; requestAnimationFrame(step)};
+  step();
+}),{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* nav active state */
+const navA=[...document.querySelectorAll('.navlinks a')];
+const sio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting) navA.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));
+}),{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>sio.observe(s));
+
+/* ambient dust */
+(function(){
+  const c=document.getElementById('dust'); if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const x=c.getContext('2d'); let w,h,pts;
+  const resize=()=>{w=c.width=innerWidth;h=c.height=innerHeight;
+    pts=Array.from({length:Math.min(46,Math.round(w/34))},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.3+.4,vy:-(Math.random()*.16+.04),o:Math.random()*.4+.12}))};
+  resize(); addEventListener('resize',resize);
+  (function loop(){x.clearRect(0,0,w,h);
+    for(const p of pts){p.y+=p.vy; if(p.y<-6){p.y=h+6;p.x=Math.random()*w}
+      x.beginPath();x.arc(p.x,p.y,p.r,0,6.284);x.fillStyle='rgba(155,200,255,'+p.o+')';x.fill()}
+    requestAnimationFrame(loop)})();
+})();
+
+/* ===== DATA ===== */
+const zones={
+  kitchen:{t:'廚房（非截擊區）',big:'2.13 m',p:['網子兩側各 7 英尺（2.13 m）的區域，正式名稱是「非截擊區」。','站在廚房內（包括踩到廚房線）時不可以截擊，也就是不能在球落地前擊球。球先落地後，就可以進入廚房擊球。','這條規則讓匹克球不會變成網前扣殺比賽，也是 Dink 戰術存在的原因。']},
+  kline:{t:'廚房線',big:'屬於廚房',p:['廚房線算在廚房之內：截擊時腳踩到線，視同在廚房內，判失誤。','發球落在廚房線上，也算落在廚房，判發球失誤。','雙打時兩人都站到廚房線後方，是最主要的得分站位。']},
+  svc:{t:'發球區',big:'3.05 × 4.57 m',p:['中線把廚房線到底線之間分成左右兩個發球區。','發球必須斜對角送到對方的發球區，且越過廚房。壓到中線、邊線、底線都算好球。','發球方的分數為偶數時，該局第一位發球員會在右發球區。']},
+  base:{t:'底線',big:'發球位置',p:['發球時至少一腳要在底線後方地面，擊球瞬間雙腳都不能踩到底線或場內。','落在底線上的球是界內球。','接發球方的接發者站在底線附近，準備讓發球先彈地。']},
+  net:{t:'球網',big:'86.4 / 91.4 cm',p:['中央高 34 英寸（86.4 cm），網柱處高 36 英寸（91.4 cm）。','發球擦網後落在正確發球區，繼續比賽，不重發。','球在比賽中時，球員或球拍碰網、碰網柱都是失誤。']}
+};
+document.querySelectorAll('.zone').forEach(z=>{
+  z.setAttribute('tabindex','0');z.setAttribute('role','button');
+  const go=()=>{
+    document.querySelectorAll('.zone').forEach(x=>x.classList.toggle('sel',x.dataset.z===z.dataset.z));
+    const d=zones[z.dataset.z];
+    document.getElementById('zoneinfo').innerHTML=`<h3>${d.t}</h3><div class="big">${d.big}</div>${d.p.map(x=>`<p>${x}</p>`).join('')}`;
+  };
+  z.addEventListener('click',go);z.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+});
+
+/* ---------- skills ---------- */
+const skills=[
+ {n:'握拍',q:'pickleball continental grip',p:'大陸式握拍讓正手、反手、截擊不必換握，是網前快速交換球時的基礎。',k:['像握手一樣握住握把，虎口的 V 字對準握把左上稜（右手持拍）。','握力約 3–4 分（10 分最緊），手腕保持放鬆。','食指可稍微分開，增加拍面控制。'],e:['像拿平底鍋一樣從上方握住（西方式），反手很難處理。','握太緊，Dink 時球容易彈太高。'],c:'觀察隊友虎口位置，並請他在不換握的情況下連續做正手與反手揮拍。'},
+ {n:'準備姿勢',q:'pickleball ready position',p:'讓身體隨時能往左右與前後移動，是所有擊球的起點。',k:['雙腳與肩同寬或稍寬，膝蓋微彎，重心在前腳掌。','球拍放在身體前方、約胸口高度，拍頭朝上。','每次擊球後立刻回到準備姿勢。'],e:['擊球後停在原地看球，來不及準備下一拍。','球拍垂在腰部以下，面對快球來不及反應。'],c:'每一拍擊球後，數一數隊友是否在對手觸球前回到準備姿勢。'},
+ {n:'發球',q:'pickleball serve technique beginner',p:'把球穩定、深遠地送到對角發球區，讓接發者難以回出攻擊球。',k:['截擊式發球：由下往上揮，擊球點在腰部以下，擊球時拍頭不能高於手腕。','落地式發球：讓球自然落下（不可拋或推），彈地後再擊，揮拍方式不受限。','瞄準對方底線附近，深球比快球更重要。','擊球時雙腳不能踩到底線或場內。'],e:['拍頭高於手腕的「側旋上抽」發球，違反截擊式發球規定。','追求速度而發球出界，發球方每一分都很珍貴。'],c:'請隊友連發 10 球，記錄落在後半場（接近底線）的球數。'},
+ {n:'接發球',q:'pickleball return of serve',p:'回一顆深而高的球，爭取時間讓自己前進到廚房線。',k:['站在底線附近，讓發球先彈地（雙彈跳規則）。','回球瞄準對方底線，弧度可以稍高。','擊球後立刻往前移動到廚房線。'],e:['回完球留在底線，失去上網的機會。','回球太短，讓發球方可以輕鬆進攻。'],c:'觀察隊友擊球後的第一步：往前走，還是留在原地？'},
+ {n:'Dink（吊小球）',q:'pickleball dink technique',p:'在廚房線互相把球輕放進對方廚房，逼對手擊出較高的球。',k:['以肩膀帶動、像鐘擺一樣推送，手腕不要翻動。','膝蓋彎曲降低身體，拍面稍微打開。','讓球過網時剛好高一點點，落在對方廚房內。','瞄準對手腳邊或斜對角。'],e:['用手腕甩，力道不穩，球飄太高被對手扣殺。','站得太直，只用手去撈球。'],c:'計算隊友連續 Dink 不失誤、且球落在廚房內的次數。'},
+ {n:'第三拍 Drop',q:'pickleball third shot drop',p:'發球方的第三拍，用軟吊把球放進對方廚房，爭取時間讓兩人上網。',k:['從底線附近以由下往上的弧線輕推，擊球點在身體前方。','球的最高點在自己這一側，下降過網後落進廚房。','擊球後分段前進（前進、停步、再前進），不要一路衝到網前。'],e:['球打太平太高，接近網前的對手直接截擊攻擊。','擊球後衝太快，被對手打到腳邊。'],c:'記錄隊友 10 次第三拍中，對手必須讓球落地後才能處理的次數。'},
+ {n:'抽球（Drive）',q:'pickleball drive shot',p:'有力的平擊或上旋球，用來逼迫對手或製造較弱的回球。',k:['側身轉體，由下往上刷球，帶一點上旋讓球下墜。','擊球點在身體前方、腰部高度。','適合對手還在後場，或回球偏高時使用。'],e:['只用手臂出力，缺乏轉體，球無力又容易出界。','在不利位置硬抽，反而讓對手輕鬆截擊。'],c:'請隊友說明：這一球為什麼選擇抽球而不是 Drop？'},
+ {n:'截擊',q:'pickleball volley technique',p:'在球落地前擊球，縮短對手的反應時間。只能在廚房外進行。',k:['拍面保持在身體前方，動作小，像「擋」或「推」。','高球用下壓的截擊（Punch），低球用擋回的截擊（Block）。','擊球後保持平衡，身體不能因慣性踩進廚房。'],e:['大揮拍，來不及處理快速來球。','截擊後重心往前，腳踩進廚房被判失誤。'],c:'觀察隊友截擊時雙腳的位置，是否始終留在廚房線後方。'},
+ {n:'挑高球（Lob）',q:'pickleball lob shot',p:'把球挑過網前對手的頭頂，逼對方後退，打破廚房線對峙。',k:['用和 Dink 相似的準備動作，讓對手難以預判。','高度要超過對手的球拍可及範圍，落點在底線附近。','挑高球後準備防守對方的高壓球。'],e:['挑得不夠高，直接被扣殺。','挑太頻繁，失去出其不意的效果。'],c:'記錄挑高球成功讓對手退後的比例。'},
+ {n:'高壓扣殺',q:'pickleball overhead smash',p:'處理過高的來球，以向下的角度得分。',k:['側身，非持拍手指向來球幫助定位。','擊球點在頭頂前上方，向下壓球。','瞄準對手腳邊或兩人中間。'],e:['面對來球倒退跑，容易失去平衡跌倒。','正面站立揮拍，角度與力量都不足。'],c:'檢查隊友是否側身移動後退，而不是面朝前方倒退。'},
+ {n:'Reset（重置球）',q:'pickleball reset shot',p:'被對手攻擊時，把快球卸力、軟放回對方廚房，把回合拉回平衡。',k:['放鬆握拍，讓拍面吸收球速。','拍面稍微打開，動作極小。','目標是讓球落進廚房，而不是反擊得分。'],e:['想用力反擊，失誤率高。','握太緊，球反彈過高。'],c:'在對手連續攻擊時，數隊友成功 Reset 的次數。'}
+];
+const vids={"握拍": [["Grip and Ready Position Fundamentals (Third Shot Sports)", "https://www.youtube.com/watch?v=r09YFA2QfLE"]], "準備姿勢": [["Pickleball Tip – Ready Position (RSPA)", "https://www.youtube.com/shorts/6kr4hllYfUU"]], "發球": [["How to Serve Legally: Learn the 2 Pickleball Serves (USA Pickleball)", "https://www.youtube.com/watch?v=HtaMX3f5zyE"], ["Fix Your Pickleball Serve in 5 Steps", "https://www.youtube.com/watch?v=GOdOfyt8zKk"]], "接發球": [["The Return of Serve Fundamentals & Grip Technique", "https://www.youtube.com/watch?v=r09YFA2QfLE"]], "Dink（吊小球）": [["How to Dink in Pickleball: 5 Keys to Success for Beginners", "https://www.youtube.com/watch?v=G1fNM-pM9gM"], ["Pickleball Dinking 101 — The Golden Rule", "https://www.youtube.com/watch?v=40ap9ZC7EdI"]], "第三拍 Drop": [["How to Hit a Third Shot Drop", "https://www.youtube.com/watch?v=edD9zL9Wmt4"], ["How To Hit A 3rd Shot Drop (Technique Explained)", "https://www.youtube.com/watch?v=T5anZZ4-Iwo"]], "抽球（Drive）": [["Playlist: Drives, Volleys and Lobs", "https://www.youtube.com/playlist?list=PLRe6hjjhF-o7hjTJ0iiEiariVzBMJ_D0g"]], "截擊": [["Playlist: Drives, Volleys and Lobs", "https://www.youtube.com/playlist?list=PLRe6hjjhF-o7hjTJ0iiEiariVzBMJ_D0g"]], "挑高球（Lob）": [["The Pickleball LOB: How to Perfect an Effective Lob", "https://www.youtube.com/watch?v=02s7YCoQGms"], ["Pickleball Lob Survival Guide (Better Pickleball)", "https://www.youtube.com/watch?v=D0IJeMl_jsQ"]], "高壓扣殺": [["The Overhead Volley (Tips & Tricks with Casey)", "https://www.youtube.com/watch?v=rSObAyDulr0"], ["Pickleball Lob & Overhead Masterclass + Drills", "https://www.youtube.com/watch?v=N46dsVdAX3A"]], "Reset（重置球）": [["Mastering The RESET in 3 Simple Steps (Briones)", "https://www.youtube.com/watch?v=iBQ3PV_Q9bM"], ["How to Hit a RESET | The Pickleball Clinic", "https://www.youtube.com/watch?v=hwirvU2N-k4"]]};
+const enq={"握拍": "pickleball continental grip tutorial", "準備姿勢": "pickleball ready position", "發球": "pickleball legal serve tutorial", "接發球": "pickleball return of serve", "Dink（吊小球）": "how to dink pickleball", "第三拍 Drop": "pickleball third shot drop", "抽球（Drive）": "pickleball drive technique", "截擊": "pickleball volley technique", "挑高球（Lob）": "pickleball lob shot", "高壓扣殺": "pickleball overhead smash", "Reset（重置球）": "pickleball reset shot"};
+let curSkill=0;
+const PLAY='<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>';
+function renderSkill(){
+  const s=skills[curSkill];
+  const list=(vids[s.n]||[]);
+  const body=list.length?list.map(v=>`<a class="vidrow" href="${v[1]}" target="_blank" rel="noopener">${PLAY}<span>${v[0]}</span></a>`).join('')
+    :`<p class="hint" style="margin:0 0 8px">這個動作還沒有指定影片，先用搜尋結果參考。</p><a class="vidrow" href="https://www.youtube.com/results?search_query=${encodeURIComponent(enq[s.n]||('pickleball '+s.n))}" target="_blank" rel="noopener">${PLAY}<span>Search: ${enq[s.n]||s.n}</span></a>`;
+  document.getElementById('skillcard').innerHTML=`<h3>${s.n}</h3><p class="purpose">${s.p}</p>
+  <div class="cols"><div><h4>TECHNIQUE / 技術要點</h4><ol>${s.k.map(x=>`<li>${x}</li>`).join('')}</ol></div>
+  <div class="err"><h4>COMMON ERRORS / 常見錯誤</h4><ul>${s.e.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+  <div class="coachcue"><b>PEER OBSERVATION · 同儕觀察重點</b>${s.c}</div>
+  <div class="vids"><h4>DEMO VIDEOS / 英文示範影片</h4>${body}</div>`;
+  document.querySelectorAll('#skilllist button').forEach((b,i)=>b.setAttribute('aria-current',i===curSkill));
+}
+const sl=document.getElementById('skilllist');
+skills.forEach((s,i)=>{const b=document.createElement('button');b.textContent=s.n;b.addEventListener('click',()=>{curSkill=i;renderSkill()});sl.appendChild(b)});
+renderSkill();
+
+/* zones */
+document.querySelectorAll('.zone').forEach(z=>{
+  z.setAttribute('tabindex','0');z.setAttribute('role','button');
+  const go=()=>{
+    document.querySelectorAll('.zone').forEach(x=>x.classList.toggle('sel',x.dataset.z===z.dataset.z));
+    const d=zones[z.dataset.z];
+    document.getElementById('zoneinfo').innerHTML=`<h3>${d.t}</h3><div class="big">${d.big}</div>${d.p.map(x=>`<p>${x}</p>`).join('')}`;
+  };
+  z.addEventListener('click',go);z.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+});
+
+/* tactics */
+const phases=[
+ {t:'發球',pos:{R1:[50,-18],R2:[150,140],S1:[150,458],S2:[50,458]},ball:'M150 452 Q100 200 55 20',
+  d:'發球員在右發球區底線後發球，斜對角送到對方發球區。發球方兩人都留在底線，因為雙彈跳規則規定第三拍必須等球落地。接發方的搭檔可以先站到廚房線。',
+  q:'為什麼發球方的搭檔不能一開始就站到網前？如果站上去，會發生什麼事？'},
+ {t:'接發球',pos:{R1:[60,140],R2:[150,140],S1:[150,458],S2:[50,458]},ball:'M50 -10 Q100 220 140 420',
+  d:'接發者讓球彈地後，回一顆深球到發球方底線，並立刻前進到廚房線，和搭檔並排。此時接發方已經佔到最有利的位置。',
+  q:'接發球要打深還是打快？哪一種能讓你有更多時間上網？'},
+ {t:'第三拍 Drop',pos:{R1:[60,140],R2:[140,140],S1:[145,370],S2:[55,370]},ball:'M145 430 Q120 170 110 200',
+  d:'發球方用第三拍 Drop 把球軟放進對方廚房。對手只能等球落地、向上處理，發球方趁這段時間往前推進到過渡區。',
+  q:'如果你的第三拍打得太高，網前的對手會怎麼處理？你該怎麼調整？'},
+ {t:'廚房線對峙',pos:{R1:[60,138],R2:[140,138],S1:[140,302],S2:[60,302]},ball:'M60 145 Q90 205 125 272',
+  d:'四人都在廚房線，進入 Dink 對打。雙方比的是耐心：誰先把球打高，誰就給對手進攻的機會。',
+  q:'Dink 對打時，你要打向對手的哪裡？直線、斜線，還是兩人中間？各有什麼好處？'},
+ {t:'進攻時機',pos:{R1:[70,138],R2:[130,138],S1:[128,302],S2:[62,302]},ball:'M100 190 L100 270 L85 300',
+  d:'對手回球偏高、超過網子高度時，就是截擊下壓的時機。攻擊目標優先選兩人中間或對手持拍側的腳邊。如果來球低於網高，繼續 Dink 或 Reset，不要硬攻。',
+  q:'你怎麼判斷一顆球「可以攻」還是「應該繼續 Dink」？試著說出你用來判斷的線索。'}
+];
+const pg=document.getElementById('players');
+const colors={R:'#8B7BFF',S:'#2DD4E8'};
+Object.keys(phases[0].pos).forEach(id=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');g.setAttribute('class','player');g.id='p'+id;
+  g.innerHTML=`<circle r="13" fill="${colors[id[0]]}" opacity=".9"/><circle r="17" fill="none" stroke="${colors[id[0]]}" stroke-width="1" opacity=".35"/><text text-anchor="middle" dy="4.5" font-size="11" font-weight="700" font-family="Space Grotesk, sans-serif" fill="#05070D">${id}</text>`;
+  pg.appendChild(g);
+});
+const stepsEl=document.getElementById('steps');
+phases.forEach((p,i)=>{const b=document.createElement('button');b.textContent=`${i+1} · ${p.t}`;b.addEventListener('click',()=>setPhase(i));stepsEl.appendChild(b)});
+function setPhase(i){
+  const p=phases[i];
+  Object.entries(p.pos).forEach(([id,[x,y]])=>{document.getElementById('p'+id).style.transform=`translate(${x}px,${y}px)`});
+  document.getElementById('ballpath').setAttribute('d',p.ball);
+  [...stepsEl.children].forEach((b,j)=>b.setAttribute('aria-pressed',i===j));
+  document.getElementById('phase').innerHTML=`<h3>${p.t}</h3><p>${p.d}</p><div class="think"><b>TEAM THINKING · 小隊思考</b><span>${p.q}</span></div>
+  <p class="hint">${i<phases.length-1?`<button class="steps-next" style="font:inherit;font-size:14px;border:0;background:none;color:var(--cyan);cursor:pointer;padding:0">下一階段：${phases[i+1].t} →</button>`:'圖中 R 為接發球方、S 為發球方，虛線為這一拍的球路。'}</p>`;
+  const nx=document.querySelector('.steps-next'); if(nx) nx.addEventListener('click',()=>setPhase(i+1));
+}
+setPhase(0);
+
+const scenarios=[
+ {q:'對手一直把接發球打到我們底線深處，我們上不了網。',a:'先確認是第三拍的品質問題，還是移動問題。可以練習在深球時用較高弧度的 Drop，並採「分段前進」：打完一拍前進幾步，對手觸球時停步準備，再繼續前進。'},
+ {q:'Dink 對打時，我們總是先失誤。',a:'檢查三件事：膝蓋是否彎曲、是否用手腕甩球、球的目標是否太貼近網。可以先把目標訂為「落在廚房中段」，穩定後再追求角度。'},
+ {q:'對手有一位很強、一位較弱，要怎麼打？',a:'多數回合可以把球送到較弱的一側，但要注意強者可能會移位搶球。討論：搶球時，對方哪一側會出現空檔？'},
+ {q:'我們兩人常常同時去追同一顆中間球。',a:'事先約定規則，例如「正手在中間的人負責中間球」，或由位於斜對角、角度較好的一方處理。比賽前在小隊內用一句話說清楚。'},
+ {q:'對手常常挑高球，我們一直被逼退。',a:'觀察對手挑球前的準備動作，稍微提早後退半步；站位不要太貼近廚房線。也可以討論：我們的 Dink 是不是太好挑，例如打得太高或太靠中間。'}
+];
+document.getElementById('scenarios').innerHTML=scenarios.map(s=>`<details><summary>${s.q}</summary><div>${s.a}</div></details>`).join('');
+
+/* rules */
+const rules=[
+ {t:'發球',a:'發球必須斜對角送到對方發球區，並越過廚房（落在廚房線上算失誤）。截擊式發球要由下往上揮、擊球點在腰部以下、拍頭不高於手腕；落地式發球則讓球自然落下，彈地後再擊。每位發球員只有一次發球機會；擦網後落在正確區域，繼續比賽。'},
+ {t:'雙彈跳規則',a:'發球後，接發方必須讓球先彈地一次才能回擊；接著發球方也必須讓回球彈地一次。這兩次彈地之後，雙方才可以截擊或讓球落地擊球。'},
+ {t:'廚房（非截擊區）',a:'站在廚房內或踩到廚房線時不可以截擊。截擊後因慣性踩進廚房，即使球已經死球，仍判失誤。球落地後，可以隨時進入廚房擊球。'},
+ {t:'計分（發球得分制）',a:'只有發球方可以得分。一般每局 11 分，須領先 2 分才獲勝。雙打報分為三個數字：發球方分數、接發方分數、發球員順序（1 或 2）。每局開始時由 0-0-2 起算，第一個發球的隊伍只有一位發球員。部分賽會改用每球得分制（rally scoring），請以賽會規定為準。'},
+ {t:'換發球',a:'發球方得分時，發球員與搭檔交換左右位置，同一人繼續發球。發球方失分時，換搭檔發球（第二發球員）；兩人都失分後換對方發球（side out），由當時站在右發球區的球員先發。'},
+ {t:'常見失誤',a:'球出界、未過網、違反雙彈跳規則、廚房內截擊、球打到球員身體或衣物、球在比賽中時觸網或碰網柱、發球時腳踩線。壓到線的球都算界內（發球落在廚房線上例外）。'},
+ {t:'線審與自我判決',a:'一般練習與友誼賽由接球方判自己半場的界內外。無法立即而且確定地判定出界時，就算界內，讓對手得到有利判決。'}
+];
+document.getElementById('rulelist').innerHTML=rules.map(r=>`<details><summary>${r.t}</summary><div>${r.a}</div></details>`).join('');
+
+let S,hist;
+function newGame(){S={score:[0,0],serving:0,num:2,pos:[{r:'A1',l:'A2'},{r:'B1',l:'B2'}],server:'A1',over:false,msg:'比賽開始，第一位發球員從右發球區發球。'};hist=[]}
+function snapshot(){hist.push(JSON.stringify(S))}
+function rally(serverWins){
+  if(S.over) return; snapshot();
+  const t=S.serving;
+  if(serverWins){
+    S.score[t]++; const p=S.pos[t]; [p.r,p.l]=[p.l,p.r];
+    S.msg=`發球方得分，${S.server} 換到另一側繼續發球。`;
+    if(S.score[t]>=11&&S.score[t]-S.score[1-t]>=2){S.over=true;S.msg=`${t===0?'A 隊':'B 隊'}以 ${S.score[t]}:${S.score[1-t]} 獲勝。`}
+  }else if(S.num===1){
+    const p=S.pos[t]; S.server=(p.r===S.server)?p.l:p.r; S.num=2;
+    S.msg=`發球方失分，換第二發球員 ${S.server}，位置不變。`;
+  }else{
+    S.serving=1-t; S.num=1; S.server=S.pos[S.serving].r;
+    S.msg=`換發（side out），由${S.serving===0?'A 隊':'B 隊'}右側的 ${S.server} 發球。`;
+  }
+  renderScore();
+}
+function renderScore(){
+  const t=S.serving,o=1-t,side=S.pos[t].r===S.server?'右':'左';
+  const team=(i)=>`<div class="team ${i===t?'serve':''}"><div class="tn">${i===0?'A 隊':'B 隊'}</div><div class="n">${S.score[i]}</div><div class="p">右 ${S.pos[i].r} · 左 ${S.pos[i].l}</div></div>`;
+  document.getElementById('score').innerHTML=`<div class="lbl">CALL THE SCORE · 發球前請報分</div>
+  <div class="call">${S.score[t]}-${S.score[o]}-${S.num}</div>
+  <div class="who">${S.over?'比賽結束':`發球員 ${S.server}（${side}發球區）`}</div>
+  <div class="teams">${team(0)}${team(1)}</div>
+  <div class="btns"><button class="b-win" data-a="w" ${S.over?'disabled':''}>發球方贏這球</button><button class="b-lose" data-a="l" ${S.over?'disabled':''}>接發方贏這球</button>
+  <button class="b-ghost" data-a="u">上一步</button><button class="b-ghost" data-a="n">新的一局</button></div>
+  <div class="log">${S.msg}</div>`;
+  document.querySelectorAll('#score button').forEach(b=>b.addEventListener('click',()=>{
+    const a=b.dataset.a; if(a==='w')rally(true); else if(a==='l')rally(false);
+    else if(a==='u'){if(hist.length){S=JSON.parse(hist.pop());renderScore()}} else {newGame();renderScore()}
+  }));
+}
+newGame();renderScore();
+
+const quiz=[
+ {q:'發球落在對方的廚房線上。',a:false,e:'廚房線屬於廚房，發球落在線上是發球失誤。'},
+ {q:'發球擦網後，落在正確的發球區內，繼續比賽。',a:true,e:'現行規則已取消擦網重發，擦網後落在正確區域就是好球。'},
+ {q:'接發者回球後，發球方在球落地前直接截擊。',a:false,e:'違反雙彈跳規則：發球方的第三拍也必須等球落地。'},
+ {q:'球員在廚房外截擊，擊球後慣性讓腳踩進廚房。',a:false,e:'只要是截擊動作帶來的慣性，踩進廚房都算失誤，即使球已經死球。'},
+ {q:'球先落在廚房內，球員走進廚房把球擊回。',a:true,e:'球落地後就不是截擊，可以進入廚房擊球。'},
+ {q:'來球落在底線上。',a:true,e:'壓線球算界內（只有發球落在廚房線上例外）。'},
+ {q:'接發球方贏得這一球，所以接發球方得 1 分。',a:false,e:'標準賽制只有發球方能得分，接發方贏球只會造成換發球員或換發。'},
+ {q:'來球打到球員的手臂後彈過網，落在對方場內。',a:false,e:'球打到身體或衣物（持拍手手腕以下的部位視同球拍，不在此限）時，被打到的一方失誤。'},
+ {q:'發球擊球瞬間，發球員的腳踩在底線上。',a:false,e:'擊球時雙腳不可接觸底線或場內，否則是發球失誤。'}
+];
+let qi=0,correct=0,answered={};
+function renderQuiz(){
+  const it=quiz[qi],ans=answered[qi];
+  document.getElementById('quiz').innerHTML=`<div class="lbl" style="font-family:var(--display);font-size:11.5px;letter-spacing:.14em;color:var(--faint)">CASE ${String(qi+1).padStart(2,'0')} / ${quiz.length}</div>
+  <div class="q">${it.q}</div>
+  <div class="opts"><button data-v="1" ${ans!==undefined?'disabled':''}>合法／好球</button><button data-v="0" ${ans!==undefined?'disabled':''}>失誤</button></div>
+  <div class="fb">${ans===undefined?'':`<span class="v ${ans===it.a?'ok':'no'}">${ans===it.a?'判斷正確。':'再想想。'}</span> ${it.e}`}</div>
+  <div class="nav"><button data-n="-1" ${qi===0?'style="visibility:hidden"':''}>← 上一題</button><span>答對 ${correct} 題</span><button data-n="1" ${qi===quiz.length-1?'style="visibility:hidden"':''}>下一題 →</button></div>`;
+  document.querySelectorAll('#quiz .opts button').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.v==='1';answered[qi]=v;if(v===it.a)correct++;renderQuiz()}));
+  document.querySelectorAll('#quiz .nav button').forEach(b=>b.addEventListener('click',()=>{qi+=+b.dataset.n;renderQuiz()}));
+}
+renderQuiz();
+
+/* roles */
+const roles=[
+ {n:'小隊教練',d:'帶領暖身與技術練習，依「動作示例」的同儕觀察重點給隊友回饋。',c:['課前確認本週要練的動作','帶領 10 分鐘小隊練習','記錄每位隊友一項進步與一項待改善']},
+ {n:'隊長',d:'協調隊內分工與出賽名單，處理小隊內部的意見分歧。',c:['排定本週出賽組合','確認每個人都有擔任職務','比賽後帶領小隊討論一個戰術情境']},
+ {n:'裁判',d:'依規則執法，判斷廚房違例、發球失誤與界內外。',c:['課前完成規則判斷題','比賽中清楚報出失誤原因','賽後與雙方確認有爭議的判決']},
+ {n:'記分員',d:'每球發球前大聲報分，並記錄比賽結果。',c:['用記分練習熟悉三碼報分','每球發球前報分','賽後將比分交給統計員']},
+ {n:'統計員',d:'紀錄小隊數據，例如發球成功率、第三拍落點、失誤類型。',c:['準備本週統計表','記錄至少一場比賽的數據','向小隊報告一項數據發現']},
+ {n:'器材與安全',d:'負責場地、器材與熱身安全。',c:['課前檢查網高與場地','清點球拍與球，更換裂球','確認小隊完成熱身']}
+];
+const checked=store.get('pb-checks')||{};
+document.getElementById('roles').innerHTML=roles.map((r,i)=>`<div class="role glass"><h3>${r.n}</h3><p>${r.d}</p>
+ ${r.c.map((c,j)=>`<label><input type="checkbox" data-k="${i}-${j}" ${checked[i+'-'+j]?'checked':''}> <span>${c}</span></label>`).join('')}</div>`).join('');
+document.querySelectorAll('#roles input').forEach(cb=>cb.addEventListener('change',()=>{checked[cb.dataset.k]=cb.checked;store.set('pb-checks',checked)}));
+</script>
+</body>
+</html>
